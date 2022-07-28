@@ -1,0 +1,549 @@
+%
+% This is a borrowed LaTeX template file for lecture notes for CS267,
+% Applications of Parallel Computing, UCBerkeley EECS Department.
+% Now being used for CMU's 10725 Fall 2012 Optimization course
+% taught by Geoff Gordon and Ryan Tibshirani.  When preparing 
+% LaTeX notes for this class, please use this template.
+%
+% To familiarize yourself with this template, the body contains
+% some examples of its use.  Look them over.  Then you can
+% run LaTeX on this file.  After you have LaTeXed this file then
+% you can look over the result either by printing it out with
+% dvips or using xdvi. "pdflatex template.tex" should also work.
+%
+
+\documentclass[twoside]{article}
+\setlength{\oddsidemargin}{0.25 in}
+\setlength{\evensidemargin}{-0.25 in}
+\setlength{\topmargin}{-0.6 in}
+\setlength{\textwidth}{6.5 in}
+\setlength{\textheight}{8.5 in}
+\setlength{\headsep}{0.75 in}
+\setlength{\parindent}{0 in}
+\setlength{\parskip}{0.1 in}
+
+%
+% ADD PACKAGES here:
+%
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{amsmath,amsfonts,amssymb,graphicx}
+% \renewcommand*{\proofname}{Explanation}
+\usepackage{tikzit}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\input{thiscircle.tikzstyles}
+\usepackage{eqparbox}
+\usepackage{mathtools}
+\usepackage{enumitem,kantlipsum}
+\usepackage{xargs}                      % Use more than one optional parameter 
+\usepackage[colorinlistoftodos,prependcaption,textwidth=2.75cm]{todonotes}
+\setlength{\marginparwidth}{2.67cm}
+\usepackage{marginnote}
+\newcommandx{\apologize}[2][1=]{\todo[,linecolor=blue,backgroundcolor=blue!25,bordercolor=blue,#1]{#2}}
+\renewcommand{\algorithmiccomment}[1]{\hfill{$\triangleright$~#1}}
+\newcommand{\algorithmautorefname}{Algorithm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+%
+% The following commands set up the lecnum (lecture number)
+% counter and make various numbering schemes work relative
+% to the lecture number.
+%
+\newcounter{lecnum}
+\renewcommand{\thepage}{\thelecnum-\arabic{page}}
+\renewcommand{\thesection}{\thelecnum.\arabic{section}}
+\renewcommand{\theequation}{\thelecnum.\arabic{equation}}
+\renewcommand{\thefigure}{\thelecnum.\arabic{figure}}
+\renewcommand{\thetable}{\thelecnum.\arabic{table}}
+\newcommand{\qedwhite}{\hfill \ensuremath{\Box}}
+\newcommand{\abs}[1]{\left\lvert#1\right\rvert}
+% \renewcommand{\familydefault}{\sfdefault}
+%
+% The following macro is used to generate the header.
+%
+\newcommand{\lecture}[4]{
+   \pagestyle{myheadings}
+   \thispagestyle{plain}
+   \newpage
+   \setcounter{lecnum}{#1}
+   \setcounter{page}{1}
+   \noindent
+   \begin{center}
+   \framebox{
+      \vbox{\vspace{2mm}
+    \hbox to 6.28in { {\bf 1: Algorithm Analysis
+	\hfill Fall 2021} }
+       \vspace{4mm}
+       \hbox to 6.28in { {\Large \hfill Lecture #1: #2  \hfill} }
+       \vspace{2mm}
+       \hbox to 6.28in { {\it Lecturer: #3 \hfill Scribes: #4} }
+      \vspace{2mm}}
+   }
+   \end{center}
+   \markboth{Lecture #1: #2}{Lecture #1: #2}
+
+%   {\bf Note}: {\it LaTeX template courtesy of UC Berkeley EECS dept.}
+
+%   {\bf Disclaimer}: {\it These notes have not been subjected to the
+%   usual scrutiny reserved for formal publications.  They may be distributed
+%   outside this class only with the permission of the Instructor.}
+%   \vspace*{4mm}
+}
+%
+% Convention for citations is authors' initials followed by the year.
+% For example, to cite a paper by Leighton and Maggs you would type
+% \cite{LM89}, and to cite a paper by Strassen you would type \cite{S69}.
+% (To avoid bibliography problems, for now we redefine the \cite command.)
+% Also commands that create a suitable format for the reference list.
+\renewcommand{\cite}[1]{[#1]}
+\def\beginrefs{\begin{list}%
+        {[\arabic{equation}]}{\usecounter{equation}
+         \setlength{\leftmargin}{2.0truecm}\setlength{\labelsep}{0.4truecm}%
+         \setlength{\labelwidth}{1.6truecm}}}
+\def\endrefs{\end{list}}
+\def\bibentry#1{\item[\hbox{[#1]}]}
+
+%Use this command for a figure; it puts a figure in wherever you want it.
+%usage: \fig{NUMBER}{SPACE-IN-INCHES}{CAPTION}
+\newcommand{\fig}[3]{
+			\vspace{#2}
+			\begin{center}
+			Figure \thelecnum.#1:~#3
+			\end{center}
+	}
+% Use these for theorems, lemmas, proofs, etc.
+\newtheorem{theorem}{Theorem}[lecnum]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newenvironment{proof}{{\bf Explanation:}}{\hfill\rule{2mm}{2mm}}
+
+% **** IF YOU WANT TO DEFINE ADDITIONAL MACROS FOR YOURSELF, PUT THEM HERE:
+
+\newcommand\E{\mathbb{E}}
+
+\begin{document}
+%FILL IN THE RIGHT INFO.
+%\lecture{**LECTURE-NUMBER**}{**DATE**}{**LECTURER**}{**SCRIBE**}
+\lecture{1}{Computational Complexities of Algorithms}{None}{None}
+%\footnotetext{These notes are partially based on those of Nigel Mansell.}
+
+% **** YOUR NOTES GO HERE:
+
+% Some general latex examples and examples making use of the
+% macros follow.  
+%**** IN GENERAL, BE BRIEF. LONG SCRIBE NOTES, NO MATTER HOW WELL WRITTEN,
+%**** ARE NEVER READ BY ANYBODY.
+% This lecture's notes illustrate some uses of
+% various \LaTeX\ macros.  
+% Take a look at this and imitate.
+
+In this note, we will explore some examples in analyzing computational complexities of algorithms, especially of those mathematics-oriented optimization algorithms and data structure algorithms. The readers are encouraged to first familiarize them-selves with the so-called {\color{blue} Big-$\mathcal{O}$} notation, which has been elaborated in the book \cite{Cormen09} and \href{https://en.wikipedia.org/wiki/Big_O_notation}{this Wikipedia page}. \href{https://stackoverflow.com/questions/487258/what-is-a-plain-english-explanation-of-big-o-notation}{This Stack Overflow page} may also help.
+
+\section{Computational Complexity Analysis: A Case-by-Case Study} % Don't be this informal in your notes!
+\begin{example}[``Hello World!'']\normalfont
+    \autoref{alg:alg1} below has a computational complexity of $\mathcal{O}(n)$.
+
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE a number $n\in\mathbb{N}_{+}$
+\ENSURE $\varnothing$
+\STATE initialize $i$ as $0$
+\WHILE{$i<n$}
+\STATE $\operatorname{print}(\text{``Hello World!''})$ \COMMENT{This operation can be done in $\mathcal{O}(1)$ time!}
+\ENDWHILE
+\end{algorithmic}
+\caption{``Hello World!''}
+\label{alg:alg1}
+\end{algorithm}
+
+\end{example}
+
+\begin{proof}
+    It is obvious that the expression ``$\operatorname{print}(\text{Hello World!})$'' will be executed $n$ times, and $\operatorname{print}(\cdot)$ has a computational complexity of $\mathcal{O}(1)$, hence the claim holds.
+\end{proof}
+
+\begin{remark}\normalfont
+    The readers may still be confused about why $n$ times of an $\mathcal{O}(1)$ operation yields an $\mathcal{O}(n)$ operation. In fact, $\underbrace{\mathcal{O}(1)+\mathcal{O}(1)+\ldots+\mathcal{O}(1)}_{n\text{~times}}\subseteq\mathcal{O}(n)$. This is because
+    \begin{itemize}[leftmargin=*]
+        \item ``$\subseteq$'': $\forall f(n)\in\underbrace{\mathcal{O}(1)+\mathcal{O}(1)+\ldots+\mathcal{O}(1)}_{n\text{~times}}$, $f(n)=f_{n}(n)+\ldots+f_{1}(n)$, where $f_{i}(n)\in\mathcal{O}(1)$, $\forall i=1,\ldots,n$, with for each $i$, $\abs{f_{i}(n)}\leq c_{i}1$ whenever $n\geq N_{i}$. Hence, for $n\geq\max(\{N_{n},\ldots,N_{1}\})$, we have
+        \begin{equation*}
+        \abs{f(n)}\leq \underset{\text{(triangle inequality)}}{\abs{f_{n}(n)}+\ldots+\abs{f_{1}(n)}} \leq \underset{\text{(by definition)}}{c_{n}1+c_{n-1}1+\ldots+c_{1}1}\leq\left(\max_{i=1,\ldots,n}c_{i}\right)\left(\underbrace{1+1+\ldots+1}_{n\text{~times}}\right)=\left(\max_{i=1,\ldots,n}c_{i}\right)n,
+        \end{equation*}
+        implying $f(n)\in\mathcal{O}(n)$. Hence, $\underbrace{\mathcal{O}(1)+\mathcal{O}(1)+\ldots+\mathcal{O}(1)}_{n\text{~times}}\subseteq\mathcal{O}(n)$.
+        
+        % \item ``$\supseteq$'': $\forall f(n)\in\mathcal{O}(n)$, for $n\geq N_{0}$, we have
+        % \begin{equation*}
+        %     \abs{f(n)}\leq \underset{\text{\normalfont (by definition)}}{c n} = \underbrace{c1 + c1 + \ldots + c1}_{n\text{~times}}=:g(n),
+        % \end{equation*}
+        % Obviously, $g(n)\in\underbrace{\mathcal{O}(1)+\mathcal{O}(1)+\ldots+\mathcal{O}(1)}_{n\text{~times}}$. Note that $\abs{f(n)}\leq\abs{g(n)}$ for all $n\geq N_{0}$, we therefore have $f(n)\in\underbrace{\mathcal{O}(1)+\mathcal{O}(1)+\ldots+\mathcal{O}(1)}_{n\text{~times}}$. Hence, $\mathcal{O}(n)\subseteq\underbrace{\mathcal{O}(1)+\mathcal{O}(1)+\ldots+\mathcal{O}(1)}_{n\text{~times}}$.
+    \end{itemize}
+    Therefore, our claim holds.\qedwhite
+\end{remark}
+\newpage
+\begin{example}\normalfont
+    \autoref{alg:alg2} below has a computational complexity of $\mathcal{O}(mn)$.
+    
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE two numbers $(m,n)\in\mathbb{N}_{+}^{2}$
+\ENSURE $\varnothing$
+\FOR{$i=1,\ldots,m$}
+\FOR{$j=1,\ldots,n$}
+\STATE do something in $\mathcal{O}(1)$ time
+\ENDFOR
+\ENDFOR
+\end{algorithmic}
+\caption{An algorithm with double loops}
+\label{alg:alg2}
+\end{algorithm}
+
+\end{example}
+
+\begin{proof}
+    Obviously, the $\mathcal{O}(1)$ expression will be executed $mn$ times.
+\end{proof}
+% \newpage
+\begin{exercise}\normalfont
+Verify by yourself that the computational complexity of matrix multiplication of $\boldsymbol{A}\in\mathbb{R}^{n\times m}$ and $\boldsymbol{B}\in\mathbb{R}^{m\times p}$, whose pseudo-code is given in \autoref{alg:alg3} below, is $\mathcal{O}(nmp)$.
+    
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE $\boldsymbol{A}\in\mathbb{R}^{n\times m}$ and $\boldsymbol{B}\in\mathbb{R}^{m\times p}$
+\ENSURE $\boldsymbol{A}\boldsymbol{B}$
+\STATE initialize $\boldsymbol{C}\in\{0\}^{n\times p}$
+\FOR{$i=1,\ldots,n$}
+\FOR{$j=1,\ldots,p$}
+\FOR{$k=1,\ldots,m$}
+\STATE $c_{ij}\leftarrow c_{ij} + a_{ik}b_{kj}$
+\ENDFOR
+\ENDFOR
+\ENDFOR
+\RETURN $\boldsymbol{C}$
+\end{algorithmic}
+\caption{Matrix multiplication}
+\label{alg:alg3}
+\end{algorithm}
+
+\end{exercise}
+
+Next, we step into some more complicated complexity analysis cases.
+
+\begin{example}[Factorization Machine]\normalfont
+    The objective function of the canonical Factorization Machine (with intercept term $w_{0}$ ignored) is given as follows
+$$
+f_{\mathrm{FM}}(\boldsymbol{x} ; \boldsymbol{w}, \boldsymbol{P}):=\langle\boldsymbol{w}, \boldsymbol{x}\rangle+\sum_{j_{2}>j_{1}}\left\langle \boldsymbol{p}_{j_{1}}, \boldsymbol{p}_{j_{2}}\right\rangle x_{j_{1}} x_{j_{2}},
+$$
+where $\boldsymbol{x}\in\mathbb{R}^{d}$, $\boldsymbol{w}\in\mathbb{R}^{d}$ and $\boldsymbol{P}\in\mathbb{R}^{k\times d}$. Here, $\boldsymbol{x}$ is a sparse vector, and we denote its number of non-zero elements as $\operatorname{nnz}(\boldsymbol{x})$. By mathematical manipulations, $f_{\mathrm{FM}}(\boldsymbol{x} ; \boldsymbol{w}, \boldsymbol{P})$ can be re-arranged as
+$$
+f_{\mathrm{FM}}(\boldsymbol{x} ; \boldsymbol{w}, \boldsymbol{P}):=\langle\boldsymbol{w}, \boldsymbol{x}\rangle+\sum_{j_{2}>j_{1}}\left\langle \boldsymbol{p}_{j_{1}}, \boldsymbol{p}_{j_{2}}\right\rangle x_{j_{1}} x_{j_{2}}=\sum_{j=1}^{d}w_{j}x_{j}+\frac{1}{2} \sum_{f=1}^{k}\left[\left(\sum_{j=1}^{d} p_{fj} x_{j}\right)^{2}-\sum_{j=1}^{d} p_{fj}^{2} x_{j}^{2}\right].
+$$
+(If one wants to derive this by his/her own, then the following figure may help.)
+\begin{figure}[!ht]
+\centering
+\ctikzfig{tikz1}
+\vspace{-6em}
+\caption{A big matrix divided into three parts.}
+\end{figure}
+
+We claim that the computational complexity for evaluating the right-most objective function of FM is~$\mathcal{O}(\operatorname{nnz}(\boldsymbol{x})k)$.
+\end{example}
+% \newpage
+\begin{proof}
+    The evaluation consists of two steps.
+    \begin{enumerate}[leftmargin=*]
+        \item {\bf Evaluating the linear regression term $\sum_{j=1}^{d}w_{j}x_{j}$:} This expression is an inner product. Note that $\boldsymbol{x}$ is sparse, hence we can compute this in the most efficiency way as in \autoref{alg:alg4}, where $\operatorname{supp}(\boldsymbol{x})=\{i\mid x_{i}\neq 0\}$. Hence, the computation complexity in this part is $\mathcal{O}(\operatorname{nnz}(\boldsymbol{x}))$.
+    
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE $\boldsymbol{x}\in\mathbb{R}^{d}$ and $\boldsymbol{w}\in\mathbb{R}^{d}$
+\ENSURE $\langle\boldsymbol{w}, \boldsymbol{x}\rangle$
+\STATE initialize $c=0$
+\FOR{$i\in\operatorname{supp}(\boldsymbol{x})$}
+\STATE $c\leftarrow c+x_{i}w_{i}$
+\ENDFOR
+\RETURN $c$
+\end{algorithmic}
+\caption{Inner product of $\boldsymbol{x}$ (which is sparse) and $\boldsymbol{w}$}
+\label{alg:alg4}
+\end{algorithm}
+
+        \item {\bf Evaluating the quadratic regression term $\frac{1}{2} \sum_{f=1}^{k}[(\sum_{j=1}^{d} p_{fj} x_{j})^{2}-\sum_{j=1}^{d} v_{fj}^{2} x_{j}^{2}]$:} In a similar vein, we can figure out the computational complexity in this part as follows (to avoid redundancy, pseudo-code is omitted here). Recall that $\boldsymbol{x}$ is sparse, hence $\sum_{j=1}^{d} p_{fj} x_{j}$ and $\sum_{j=1}^{d} v_{fj}^{2} x_{j}^{2}$ can both be computed in $\mathcal{O}(\operatorname{nnz}(\boldsymbol{x}))$ time, and thus the time complexity of computing $(\sum_{j=1}^{d} p_{fj} x_{j})^{2}-\sum_{j=1}^{d} v_{fj}^{2} x_{j}^{2}$ is $\mathcal{O}(\operatorname{nnz}(\boldsymbol{x}))$. Therefore, the total computational complexity in this part is $\mathcal{O}(\operatorname{nnz}(\boldsymbol{x})k)$.
+    \end{enumerate}
+    Notice that the complexity family $\mathcal{O}(\operatorname{nnz}(\boldsymbol{x}))\subseteq\mathcal{O}(\operatorname{nnz}(\boldsymbol{x})k)$, the claim thus holds.
+\end{proof}
+
+\begin{remark}\normalfont
+    The readers may still be confused about why $g(n)\leq h(n)$ implies $\mathcal{O}(g(n))\subseteq\mathcal{O}(h(n))$. This is because $\forall f(n)\in\mathcal{O}(g(n))$, for all $n\geq N_{0}$, we have
+    \begin{equation*}
+        \abs{f(n)}\leq \underset{\text{(by definition)}}{cg(n)}\leq ch(n),
+    \end{equation*}
+    implying $f(n)\in\mathcal{O}(h(n))$. Thence, $\mathcal{O}(g(n))\subseteq\mathcal{O}(h(n))$. Similarly, one can also discover that $g(n)\leq h(n)$ implies $\mathcal{O}(g(n))+\mathcal{O}(h(n))\in\mathcal{O}(h(n))$.
+    
+    The above relation can be easily extended to the cases of multiple functions.\qedwhite
+\end{remark}
+
+% \begin{exercise}\normalfont
+% For the same $\boldsymbol{P}\in\mathbb{R}^{k\times d}$ as in the previous example, given the subdifferential of $\left\|\boldsymbol{P}^{\top}\boldsymbol{P}\right\|_{1}$ as (\cite{Li2020})  
+% $$
+% \partial_{\boldsymbol{P}}\left\|\boldsymbol{P}^{\top}\boldsymbol{P}\right\|_{1}=\left\{2 \boldsymbol{Z} \boldsymbol{P}^{\top}: \boldsymbol{Z} \in \partial_{\boldsymbol{S}}\left\|\boldsymbol{S}\right\|_{1}, \boldsymbol{S}=\boldsymbol{P}^{\top}\boldsymbol{P}\right\}.
+% $$
+% Picking a subgradient $\boldsymbol{G}\in\partial_{\boldsymbol{P}}\left\|\boldsymbol{P}^{\top}\boldsymbol{P}\right\|_{1}$, what is the time complexity of evaluating $\boldsymbol{G}$?
+% \end{exercise}
+
+% \begin{exercise}\normalfont
+% For the same $\boldsymbol{P}\in\mathbb{R}^{k\times d}$ as in the previous example, what is the time complexity of evaluating $\left\|\boldsymbol{P}^{\top}\boldsymbol{P}\right\|_{F}$?
+% \end{exercise}
+
+Below, we will encounter some examples involving recursion. Many of them are borrowed from \cite{Jordi}.
+
+\begin{example}\normalfont
+    Assume $n\geq 1$, \autoref{alg:alg5} below has a computational complexity of $\mathcal{O}(n^{2})$.
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE a number $n\in\mathbb{Z}$
+\ENSURE $\varnothing$
+\IF{$n\geq 1$}
+\STATE do something in $\mathcal{O}(n)$ time \COMMENT{Note that the $n$ here is consistent with the input.}
+\STATE call \autoref{alg:alg5} (i.e. itself) with input as $n-1$
+\ENDIF
+\end{algorithmic}
+\caption{Recursion 1}
+\label{alg:alg5}
+\end{algorithm}
+
+\end{example}
+
+\begin{proof}
+    It is easy to observe that the computational complexity of \autoref{alg:alg5} is $\mathcal{O}(n)+\mathcal{O}(n-1)+\ldots+\mathcal{O}(1)\subseteq\mathcal{O}(n(n+1)/2)=\mathcal{O}(n^{2})$, hence the claim holds.
+\end{proof}
+
+\begin{remark}\normalfont
+    The inclusion $\mathcal{O}(n)+\mathcal{O}(n-1)+\ldots+\mathcal{O}(1)\subseteq\mathcal{O}(n(n+1)/2)$ holds, because
+    \begin{itemize}[leftmargin=*]
+        \item ``$\subseteq$'': $\forall f(n)\in\mathcal{O}(n)+\mathcal{O}(n-1)+\ldots+\mathcal{O}(1)$, $f(n)=f_{n}(n)+\ldots+f_{1}(n)$, where $f_{i}(n)\in\mathcal{O}(i)$, $\forall i=1,\ldots,n$, with for each $i$, $\abs{f_{i}(n)}\leq c_{i}i$ whenever $n\geq N_{i}$. Hence, for $n\geq\max(\{N_{n},\ldots,N_{1}\})$, with the triangle inequality $\abs{f(n)}\leq \abs{f_{n}(n)}+\ldots+\abs{f_{1}(n)}$, we have
+        \begin{equation*}
+        \abs{f(n)}\leq \underset{{\text{\normalfont (by definition)}}}{c_{n}n+c_{n-1}(n-1)+\ldots+c_{1}1}\leq \left(\max_{i=1,\ldots,n}c_{i}\right)\left(n+\left(n-1\right)+\ldots+1\right)=\left(\max_{i=1,\ldots,n}c_{i}\right)\left(\frac{n(n+1)}{2}\right),
+        \end{equation*}
+        implying $f(n)\in\mathcal{O}(n(n+1)/2)$. Hence, $\mathcal{O}(n)+\mathcal{O}(n-1)+\ldots+\mathcal{O}(1)\subseteq\mathcal{O}(n(n+1)/2)$.
+        
+        % \item ``$\supseteq$'': $\forall f(n)\in\mathcal{O}(n(n+1)/2)$, for $n\geq N_{0}$, we have
+        % \begin{equation*}
+        %     \abs{f(n)}\leq \underset{\text{\normalfont (by definition)}}{c\left(\frac{n(n+1)}{2}\right)}=\left(cn+c(n-1)+\ldots+c1\right)=:g(n).
+        % \end{equation*}
+        % Obviously, $g(n)\in\mathcal{O}(n)+\mathcal{O}(n-1)+\ldots+\mathcal{O}(1)$. Note that $\abs{f(n)}\leq \abs{g(n)}$ for all $n\geq N_{0}$, we therefore have $f(n)\in\mathcal{O}(n)+\mathcal{O}(n-1)+\ldots+\mathcal{O}(1)$. Hence, $\mathcal{O}(n(n+1)/2)\subseteq\mathcal{O}(n)+\mathcal{O}(n-1)+\ldots+\mathcal{O}(1)$.
+    \end{itemize}
+    Therefore, our claim holds. In the sequel, we will omit these intermediate steps.\qedwhite
+\end{remark}
+% \newpage
+\begin{example}\normalfont
+    Assume $n\geq 1$, \autoref{alg:alg6} below has a computational complexity of $\mathcal{O}(n)$.
+\end{example}
+    
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE a number $n=2^{k}$ for some $k\in\mathbb{Z}$
+\ENSURE $\varnothing$
+\IF{$n\geq 1$}
+\STATE do something in $\mathcal{O}(n)$ time \COMMENT{Note that the $n$ here is consistent with the input.}
+\STATE call \autoref{alg:alg6} (i.e. itself) with input as {\color{blue} $n/2$}
+\ENDIF
+\end{algorithmic}
+\caption{Recursion 2}
+\label{alg:alg6}
+\end{algorithm}
+
+\begin{proof}
+    Obviously, the computational complexity is $\mathcal{O}(n)+\mathcal{O}(n/2)+\ldots+\mathcal{O}(1)\subseteq\mathcal{O}(n((1/2^{0})+(1/2^{1})+(1/2^{2})+\ldots+(1/2^{\log_{2}(n)})))=\mathcal{O}(n(2-(1/n)))=\mathcal{O}(2n-1)=\mathcal{O}(n)$.
+\end{proof}
+
+\begin{exercise}\normalfont
+    Assume $n\geq 1$, what is the computational complexity of \autoref{alg:alg7} below?
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE a number $n=2^{k}$ for some $k\in\mathbb{Z}$
+\ENSURE $\varnothing$
+\IF{$n\geq 1$}
+\STATE do something in $\mathcal{O}(n)$ time \COMMENT{Note that the $n$ here is consistent with the input.}
+\STATE call \autoref{alg:alg7} (i.e. itself) with input as $n/2$
+\STATE {\color{blue} call again \autoref{alg:alg7} (i.e. itself) with input as $n/2$}
+\ENDIF
+\end{algorithmic}
+\caption{Recursion 3}
+\label{alg:alg7}
+\end{algorithm}
+
+\end{exercise}
+% \newpage
+\begin{example}[Inorder Traversal]\normalfont
+    The \textit{inorder traversal} algorithm for iterating over a tree is given in \autoref{alg:alg8} below. Assume there are $n$ nodes in the tree, then the computational complexity of \autoref{alg:alg8} is $\mathcal{O}(n)$.
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE the root node $r$ of a tree (or sub-tree)
+\ENSURE $\varnothing$
+\IF{$r=\varnothing$}
+\RETURN
+\ENDIF
+\STATE call \autoref{alg:alg8} with input as the left child of $r$
+\STATE do something with $r$ in $\mathcal{O}(1)$ time \COMMENT{Such as printing $r$.}
+\STATE call \autoref{alg:alg8} with input as the right child of $r$
+\end{algorithmic}
+\caption{Inorder traversal}
+\label{alg:alg8}
+\end{algorithm}
+
+\end{example}
+
+\begin{proof}
+    This is because the $\mathcal{O}(1)$ time expression will be executed exactly $n$ times (i.e., every node $r$ will and only will be visited once).
+\end{proof}
+% \newpage
+\begin{example}[Deep-first search]\normalfont
+    \autoref{alg:alg9} below shows the pseudo-code of iterating over a graph by the well-known \textit{deep-first search} algorithm. Assume the graph $\mathcal{G}(\mathcal{V},\mathcal{E})$ has $n$ nodes and $m$ edges, then the computational complexity, of {\color{red} repeatedly calling \autoref{alg:alg9} for all $v\in\mathcal{V}\setminus\{u\in\mathcal{V}\mid\text{$u$ has been visited}\}$ until all nodes have been visited}\reversemarginpar\apologize{I have revised the expression here, which is unclear in the original manuscript.\newline I apologize for any misleading it has made.}, is $\mathcal{O}(n+m)$.
+\begin{algorithm}[!ht]
+\begin{algorithmic}[1]
+\REQUIRE a graph $\mathcal{G}(\mathcal{V},\mathcal{E})$ and a node $v\in\mathcal{V}$
+\ENSURE $\varnothing$
+\STATE mark $v$ as visited \COMMENT{This can be done in $\mathcal{O}(1)$ time.}
+\STATE do something with $v$ in $\mathcal{O}(1)$ time
+\FORALL{$u\in\mathcal{N}(v)$}
+\STATE call \autoref{alg:alg9} with inputs $\mathcal{G}(\mathcal{V},\mathcal{E})$ and $u$, if $u$ has not been visited yet
+\ENDFOR
+\end{algorithmic}
+\caption{Deep-first search}
+\label{alg:alg9}
+\end{algorithm}
+\end{example}
+
+\begin{proof}
+    In \autoref{alg:alg9}, every node in $\mathcal{V}$ will be visited only once. Besides, when visiting a specific node $v$, the $\mathcal{O}(1)$ operations will be executed once, and the whole neighborhood of $v$ (i.e. $\mathcal{N}(v)$) will be checked once (which has a time complexity of $\mathcal{O}(\operatorname{deg}(v))$). Hence, the total computational complexity is $\sum_{v\in\mathcal{V}}(\mathcal{O}(1)+\mathcal{O}(1)+\mathcal{O}(\operatorname{deg}(v)))\subseteq\mathcal{O}(2n+2m)=\mathcal{O}(n+m)$.
+\end{proof}
+
+\begin{remark}\normalfont
+    Notice that we are unable to merge $\mathcal{O}(1)+\mathcal{O}(\operatorname{deg}(v))=\mathcal{O}(\operatorname{deg}(v))$, because $\operatorname{deg}(v)$ can sometimes be $0$.\qedwhite
+\end{remark}
+
+Next, we will deal with some complicated computational complexity analysis problems, arising in numerical computation and optimization problems, with the help of existing results (see \href{https://en.wikipedia.org/wiki/Computational_complexity_of_mathematical_operations}{this Wikipedia page}).
+% \newpage
+\begin{example}\normalfont
+Given $\boldsymbol{A}\in\mathbb{R}^{m\times m}$ which is invertible and $\boldsymbol{B}\in\mathbb{R}^{m\times n}$, the computational complexity of computing $\boldsymbol{A}^{-1}\boldsymbol{B}$ is $\mathcal{O}(m^{3}+m^{2}n)$.
+\end{example}
+
+\begin{proof}
+    The computation consists of two steps.
+    \begin{enumerate}[leftmargin=*]
+        \item {\bf Computing $\boldsymbol{A}^{-1}$:} Referring to the Wikipedia page above, the computational complexity of computing $\boldsymbol{A}^{-1}$ is $\mathcal{O}(m^{3})$.
+        \item {\bf Computing $\boldsymbol{A}^{-1}\boldsymbol{B}$:} With $\boldsymbol{A}^{-1}$ computed, the computation of $\boldsymbol{A}^{-1}\boldsymbol{B}$ is just a matter of matrix multiplication, whose computational complexity is $\mathcal{O}(m^{2}n)$.
+    \end{enumerate}
+    To sum up, the total computational complexity of computing $\boldsymbol{A}^{-1}\boldsymbol{B}$ is $\mathcal{O}(m^{3}+m^{2}n)$.
+\end{proof}
+\newpage
+\begin{example}\normalfont
+    Given three matrices $\boldsymbol{A}\in\mathbb{R}^{m\times n}$, $\boldsymbol{B}\in\mathbb{R}^{n\times p}$ and $\boldsymbol{C}\in\mathbb{R}^{p\times q}$. The computational complexity of evaluating $\boldsymbol{A}\boldsymbol{B}\boldsymbol{C}$ can be either $\mathcal{O}(mp(n+q))$ or $\mathcal{O}(nq(m+p))$.
+\end{example}
+
+\begin{proof}
+    There are two ways of computing $\boldsymbol{A}\boldsymbol{B}\boldsymbol{C}$.
+    \begin{enumerate}[leftmargin=*]
+        \item {\bf First compute $\boldsymbol{A}\boldsymbol{B}$ as $\boldsymbol{D}$, and then compute $\boldsymbol{D}\boldsymbol{C}$:} In this way, evaluating $\boldsymbol{D}=\boldsymbol{A}\boldsymbol{B}$ needs $\mathcal{O}(mnp)$ time, evaluating $\boldsymbol{D}\boldsymbol{C}$ needs $\mathcal{O}(mpq)$ time. Hence, the total time complexity is $\mathcal{O}(mp(n+q))$.
+        \item {\bf First compute $\boldsymbol{B}\boldsymbol{C}$ as $\boldsymbol{D}$, and then compute $\boldsymbol{A}\boldsymbol{D}$:} In this way, evaluating $\boldsymbol{D}=\boldsymbol{B}\boldsymbol{C}$ needs $\mathcal{O}(npq)$ time, evaluating $\boldsymbol{A}\boldsymbol{D}$ needs $\mathcal{O}(mnq)$ time. Hence, the total time complexity is $\mathcal{O}(nq(m+p))$.
+    \end{enumerate}
+    Thence, our claim holds.
+\end{proof}
+
+\begin{remark}\normalfont
+    In practical, we will always choose the time complexity of computing $\boldsymbol{A}\boldsymbol{B}\boldsymbol{C}$ to be $\min(\mathcal{O}(mp(\allowbreak n+q)),\mathcal{O}(nq(m+p)))$, because we can always force multiplication priority by adding parentheses in our implementations (e.g., $(\boldsymbol{A}\boldsymbol{B})\boldsymbol{C}$ or $\boldsymbol{A}(\boldsymbol{B}\boldsymbol{C})$).\qedwhite
+\end{remark}
+
+\begin{exercise}[Orthogonal Procrustes Problem]\normalfont
+Suppose we have two matrices $\boldsymbol{P} \in \mathbb{R}^{n \times m}$ and $\boldsymbol{Q} \in \mathbb{R}^{n \times d}$. The optimization problem
+\begin{equation*}
+\begin{aligned}
+\underset{\Tilde{\boldsymbol{T}}\in\mathbb{R}^{m\times d}}{\min}\quad\left\|\boldsymbol{P}\boldsymbol{\Tilde{T}-\boldsymbol{Q}}\right\|_{F}^{2}\qquad\text{\normalfont s.t.}\quad\Tilde{\boldsymbol{T}}\Tilde{\boldsymbol{T}}^{\top} = \boldsymbol{I}_{m},
+\end{aligned}
+\end{equation*}
+has an analytical solution $\Tilde{\boldsymbol{T}}=\boldsymbol{U}\boldsymbol{I}_{m,d}\boldsymbol{V}^{\top}$, where $\boldsymbol{U} \in \mathbb{R}^{m \times m}$ and $\boldsymbol{V} \in \mathbb{R}^{d \times d}$ are left and right eigenvectors of $\boldsymbol{P}^{\top}\boldsymbol{Q}$, computed by singular value decomposition, respectively.
+
+    What is the computational complexity of solving the above optimization problem? (Hint: the computational complexity of SVD for an $m$ by $n$ matrix is $\mathcal{O}(mn^{2}+m^{2}n)$, as shown in the aforementioned Wikipedia page.)
+\end{exercise}
+
+% We end this note by considering a simple network analysis problem.
+
+% \begin{example}[Computing support of edges]\normalfont
+%     In a network $\mathcal{G}(\mathcal{V},\mathcal{E})$, the support of an edge $e(u,v)\in\mathcal{E}$ is defined as $\operatorname{sup}(e,\mathcal{G})=|\{\triangle_{uvw}\mid w\in\mathcal{V}\}|$ (i.e., \# common neighbors of $u$ and $v$). Here, $\triangle_{uvw}$ is a cycle in $\mathcal{G}$ consisting of $u$, $v$ and $w$. The computational complexity of computing $\operatorname{sup}(e,\mathcal{G})$ for all $e\in\mathcal{E}$ is $\mathcal{O}(\sum_{e(u,v)\in\mathcal{E}}\min(\operatorname{deg}(u),\operatorname{deg}(v)))$.
+% \end{example}
+
+% \begin{proof}
+%     For a specific edge $e(u,v)\in\mathcal{E}$ and any triangle $\triangle_{uvw}$, we must have $w\in\mathcal{N}(u)\cap\mathcal{N}(v)$. Thence, all $w$'s can be found by looping over $\mathcal{N}(u)$ or $\mathcal{N}(v)$. Hence, $\operatorname{sup}(e(u,v),\mathcal{G})$ can be computed in $\mathcal{O}(\min(|\mathcal{N}(u)|,|\mathcal{N}(v)|))\allowbreak=\mathcal{O}(\min(\operatorname{deg}(u),\operatorname{deg}(v)))$ time, and therefore the total time complexity of computing support of all edges is $\mathcal{O}(\sum_{e(u,v)\in\mathcal{E}}\min(\operatorname{deg}(u),\operatorname{deg}(v)))$, as claimed.
+% \end{proof}
+
+% \begin{example}[$k$-truss decomposition]\normalfont
+%     Consider the algorithm of $k$-truss decomposition \cite{Huang2014}, given in \autoref{alg:ktruss}. In \autoref{alg:ktruss}, $\operatorname{sup}(\cdot)$ is an $\mathcal{O}(1)$ operation, and our goal is to compute $\tau(e)$ for all edges (please refer to \cite{Huang2014} for the definitions of the symbols). The $k$-truss decomposition algorithm has a time complexity of $\mathcal{O}(\sum_{(u,v)\in\mathcal{E}}\min(\operatorname{deg}(u),\operatorname{deg}(v)))$.
+% \end{example}
+
+% \begin{proof}
+    
+% \end{proof}
+
+
+% \begin{algorithm}[t]
+% \begin{algorithmic}[1]
+% \REQUIRE $\mathcal{G}(\mathcal{V}, \mathcal{E})$
+% %(Denote $\mu+p_i+q_j+\boldsymbol{v}_{j}^{\top}\left(\boldsymbol{u}_{i}+\frac{1}{\sqrt{|\mathcal{I}_{i}|}}\sum_{k \in \mathcal{I}_{i}}\boldsymbol{y}_{k}\right)$ as $\hat{r}_{ij}$)
+% \ENSURE $\tau(e)$ for all $e\in\mathcal{E}$
+% \STATE $k\leftarrow 2$
+% \STATE compute $\operatorname{sup}(e)$ for all $e\in\mathcal{E}$
+% \STATE sort all edges by their supports in ascending order
+% \WHILE{\textbf{true}}
+% \WHILE{there exists $e$ s.t. $\operatorname{sup}(e)\leq(k-2)$} 
+% \STATE let $e=(u,v)$ be the edge with the lowest support (w.l.o.g., we assume $\operatorname{deg}(u)\leq\operatorname{deg}(v)$)
+% \FORALL{$w\in\mathcal{N}(u)\cap\mathcal{N}(v)$}
+% \STATE $\operatorname{sup}((u, w))\leftarrow\operatorname{sup}((u, w))-1$
+% \STATE $\operatorname{sup}((v, w))\leftarrow\operatorname{sup}((v, w))-1$
+% \STATE re-order $(u, w)$ and $(v, w)$ in the sorted list by their new supports
+% \STATE $\tau(e)\leftarrow k$, and remove $e$ from $\mathcal{E}$
+% \ENDFOR
+% \ENDWHILE
+% \IF{$\mathcal{E}\neq\varnothing$}
+% \STATE $k\leftarrow k+1$
+% \ELSE
+% \STATE \textbf{break}
+% \ENDIF
+% \ENDWHILE
+% \STATE {\bf return} $\{\tau(e)\}$
+% \end{algorithmic}
+% \caption{$k$-truss decomposition}
+% \label{alg:ktruss}
+% \end{algorithm}
+
+
+\section*{References}
+\beginrefs
+\bibentry{Cormen09}{\sc Thomas H. Cormen}, {\sc Charles E. Leiserson}, {\sc Ronald L. Rivest}, {\sc Clifford Stein}, 
+``Introduction to algorithms,''
+{\it MIT press},
+\bibentry{Jordi}{\sc Jordi Cortadella}, ``Complexity Analysis of Algorithms'', \url{https://www.cs.upc.edu/~jordicf/Teaching/FME/Informatica/pdf/Complexity.pdf}
+\bibentry{Vera}{\sc Vera Sacrist´an
+}, ``Complexity of recursive algorithms'', \url{https://dccg.upc.edu/people/vera/wp-content/uploads/2013/06/recurrenciesEN.pdf}
+% \bibentry{Li2020}{\sc Xiao Li}, {\sc Zhihui Zhu}, {\sc Anthony Man-Cho So}, {\sc Rene Vidal}, 
+% ``Nonconvex robust low-rank matrix recovery,''
+% {\it SIAM Journal on Optimization},
+% 2020, pages~660--686.
+% \bibentry{Huang2014}{\sc Xin Huang}, {\sc Hong Cheng}, {\sc Lu Qin}, {\sc Wentao Tian}, {\sc Jeffrey Xu Yu}, 
+% ``Querying k-truss community in large and dynamic graphs,''
+% {\it Proceedings of the 2014 ACM SIGMOD International Conference on Management of Data},
+% 2014, pages~1311--1322.
+\endrefs
+
+% **** THIS ENDS THE EXAMPLES. DON'T DELETE THE FOLLOWING LINE:
+
+\end{document}
+
+
+
